@@ -33,8 +33,7 @@ get_categories() {
 get_packages() {
     for LINE in `grep -v "^;;" void-packages.md | sed 's| |-|g'`
     do
-        [ `echo "$LINE" | grep "^#.*"` ] && CATEGORY=`format_category $LINE` || ([ `contains "$@" "$CATEGORY"` ] && echo -n "$LINE ")
-        # echo "Cat: $CATEGORY"
+        [ `echo "$LINE" | grep "^#.*"` ] && CATEGORY=`format_category $LINE` || ([ -n `contains "$@" "$CATEGORY"` ] && echo -n "$LINE ")
     done
 }
 
@@ -63,7 +62,7 @@ WANTED_PRUNED=""
 for CATEGORY in $WANTED_CATEGORIES
 do
     [ $CATEGORY = "--*" ] && continue
-    [ -n `contains "$CATEGORIES" "$CATEGORY"` ] && WANTED_PRUNED+="$CATEGORY " || echo "Unknown category '$CATEGORY'" >&2
+    [ -n `contains "$CATEGORIES" "$CATEGORY"` ] && WANTED_PRUNED="$WANTED_PRUNED $CATEGORY " || echo "Unknown category '$CATEGORY'" >&2
 done
 
 WANTED_CATEGORIES=$WANTED_PRUNED
@@ -75,7 +74,7 @@ then
     echo "Inverting"
     for CATEGORY in $CATEGORIES
     do
-        [ -z `contains "$WANTED_CATEGORIES" "$CATEGORY"` ] && CATEGORIES_PRUNED+="$CATEGORY "
+        [ -z `contains "$WANTED_CATEGORIES" "$CATEGORY"` ] && CATEGORIES_PRUNED="$WANTED_PRUNED $CATEGORY "
     done
     WANTED_CATEGORIES="$CATEGORIES_PRUNED"
 fi
