@@ -89,12 +89,12 @@ PACKAGES=`get_packages "$WANTED_CATEGORIES"`
 echo -e "Packages to install: \n$PACKAGES"
 [[ -n `contains "$WANTED_CATEGORIES" "nonfree"` ]] && echo "Enabling nonfree void-repo" && xbps-install void-repo-nonfree
 
-xbps-install -S
+sudo xbps-install -S
 
-xbps-install -S "$WANTED_CATEGORIES"
+sudo xbps-install -S "$WANTED_CATEGORIES"
 
 # Change the default shell
-chsh -s /bin/zsh
+sudo chsh -s /bin/zsh
 
 # Clone the dotfiles
 [[ -n "$DOTFILES" ]] && echo "Cloning dotfiles '$DOTFILES'" && git clone "$DOTFILES" "$HOME" && git config core.workdir="$HOME" && mv "$HOME/.git" "$HOME/.config/.git" || echo "Home directory is not empty, cloning into dotfiles" && git clone "$DOTFILES"
