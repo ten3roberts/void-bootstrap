@@ -15,6 +15,8 @@ pulseaudio
 man-pages-posix
 
 ### Desktop
+xorg
+xinit
 bspwm
 sxhkd
 polybar
