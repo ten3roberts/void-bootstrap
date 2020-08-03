@@ -13,7 +13,7 @@ usage() {
     echo "--all to install all categories"
     echo "--invert to install all but specified packages"
     div
-    echo "available packages"
+    echo "available categories"
     div
     get_categories
     exit
@@ -26,20 +26,20 @@ format_category() {
 get_categories() {
     for LINE in `grep -v "^;;" void-packages.md | sed 's| |-|g'`
     do
-        [[ "$LINE" == \#\#\#* ]] && format_category $LINE
+        [ `echo "$LINE" | grep "^###.*"` ] && format_category $LINE
     done
 }
 
 get_packages() {
     for LINE in `grep -v "^;;" void-packages.md | sed 's| |-|g'`
     do
-        [[ "$LINE" == \#* ]] && CATEGORY=`format_category $LINE` || ([[ -n `contains "$@" $CATEGORY` ]] && echo -n "$LINE " )
+        [ `echo "$LINE" | grep "^#.*"` ] && CATEGORY=`format_category $LINE` || ([ `contains "$@" "$CATEGORY"` ] && echo -n "$LINE ")
         # echo "Cat: $CATEGORY"
     done
 }
 
 contains() {
-    echo "$1" | egrep "(^| )$2($| )" 
+    echo "$1" | egrep "(^| )$2($| )" | cut -d' ' -f1
 }
 
 # Normalize workdir
@@ -48,34 +48,34 @@ cd `dirname "$0"`
 # Download package list if it doesn't exist
 cat void-packages.md > /dev/null 2> /dev/null || echo "Downloading package list" && curl -LO "https://raw.githubusercontent.com/ten3roberts/void-bootstrap/master/void-packages.md"
 
-[[ $# == 0 ]] && usage;
+[ $# = 0 ] && usage;
 
 
 ALL=`contains "$*" "--all"`
 INVERT=`contains "$*" "--invert"`
 DOTFILES=`echo "$*" | sed -n 's/.*dotfiles=//p'`
-[[ -z "$DOTFILES" ]] && [[ -z `echo "$*" | grep -- "--dotfiles="` ]] && echo "Using my dotfiles" && DOTFILES="https://github.com/ten3roberts/dotfiles"
+[ -z "$DOTFILES" ] && [ -z `echo "$*" | grep -- "--dotfiles="` ] && echo "Using my dotfiles" && DOTFILES="https://github.com/ten3roberts/dotfiles"
 CATEGORIES=`get_categories`
-WANTED_CATEGORIES=`[[ -z "$ALL" ]] && echo "$@" || get_categories`
+WANTED_CATEGORIES=`[ -z "$ALL" ] && echo "$@" || get_categories`
 WANTED_PRUNED=""
 
 # Make sure only valid categories are entered
 for CATEGORY in $WANTED_CATEGORIES
 do
-    [[ $CATEGORY == "--*" ]] && continue
-    [[ -n `contains "$CATEGORIES" "$CATEGORY"` ]] && WANTED_PRUNED+="$CATEGORY " || echo "Unknown category '$CATEGORY'" >&2
+    [ $CATEGORY = "--*" ] && continue
+    [ -n `contains "$CATEGORIES" "$CATEGORY"` ] && WANTED_PRUNED+="$CATEGORY " || echo "Unknown category '$CATEGORY'" >&2
 done
 
 WANTED_CATEGORIES=$WANTED_PRUNED
 
 # Invert if necessary
-if [[ -n "$INVERT" ]]
+if [ -n "$INVERT" ]
 then
     CATEGORIES_PRUNED=""
     echo "Inverting"
     for CATEGORY in $CATEGORIES
     do
-        [[ -z `contains "$WANTED_CATEGORIES" "$CATEGORY"` ]] && CATEGORIES_PRUNED+="$CATEGORY "
+        [ -z `contains "$WANTED_CATEGORIES" "$CATEGORY"` ] && CATEGORIES_PRUNED+="$CATEGORY "
     done
     WANTED_CATEGORIES="$CATEGORIES_PRUNED"
 fi
@@ -87,16 +87,16 @@ div
 PACKAGES=`get_packages "$WANTED_CATEGORIES"`
 
 echo -e "Packages to install: \n$PACKAGES"
-[[ -n `contains "$WANTED_CATEGORIES" "nonfree"` ]] && echo "Enabling nonfree void-repo" && xbps-install void-repo-nonfree
+[ -n `contains "$WANTED_CATEGORIES" "nonfree"` ] && echo "Enabling nonfree void-repo" && xbps-install void-repo-nonfree
 
-sudo xbps-install -S
+sudo xbps-install -S || exit
 
-sudo xbps-install -S "$WANTED_CATEGORIES"
+sudo xbps-install -S "$WANTED_CATEGORIES" || exit
 
 # Change the default shell
 sudo chsh -s /bin/zsh
 
 # Clone the dotfiles
-[[ -n "$DOTFILES" ]] && echo "Cloning dotfiles '$DOTFILES'" && git clone "$DOTFILES" "$HOME" && git config core.workdir="$HOME" && mv "$HOME/.git" "$HOME/.config/.git" || echo "Home directory is not empty, cloning into dotfiles" && git clone "$DOTFILES"
+[ -n "$DOTFILES" ] && echo "Cloning dotfiles '$DOTFILES'" && git clone "$DOTFILES" "$HOME" && git config core.workdir="$HOME" && mv "$HOME/.git" "$HOME/.config/.git" || echo "Home directory is not empty, cloning into dotfiles" && git clone "$DOTFILES" || exit
 
 echo "Bootstrapping finished, it is recommended to reboot"
