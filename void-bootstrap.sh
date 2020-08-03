@@ -33,12 +33,13 @@ get_categories() {
 get_packages() {
     for LINE in `grep -v "^;;" void-packages.md | sed 's| |-|g'`
     do
-        [ `echo "$LINE" | grep "^#.*"` ] && CATEGORY=`format_category $LINE` || ([ -n `contains "$@" "$CATEGORY"` ] && echo -n "$LINE ")
+        [ `echo "$LINE" | grep "^#.*"` ] && CATEGORY=`format_category $LINE` && continue
+        [ "`contains "$@" "$CATEGORY"`" ] && echo -n "$LINE "
     done
 }
 
 contains() {
-    echo "$1" | egrep "(^| )$2($| )" | cut -d' ' -f1
+    echo "$1" | egrep "(^| )$2($| )" 
 }
 
 # Normalize workdir
@@ -86,11 +87,11 @@ div
 PACKAGES=`get_packages "$WANTED_CATEGORIES"`
 
 echo -e "Packages to install: \n$PACKAGES"
-[ -n `contains "$WANTED_CATEGORIES" "nonfree"` ] && echo "Enabling nonfree void-repo" && xbps-install void-repo-nonfree
+[ "`contains "$WANTED_CATEGORIES" "nonfree"`" ] && echo "Enabling nonfree void-repo" && xbps-install void-repo-nonfree
 
 sudo xbps-install -S || exit
 
-sudo xbps-install -S "$PACKAGES" || exit
+sudo xbps-install -S $PACKAGES || exit
 
 # Change the default shell
 sudo chsh -s /bin/zsh
