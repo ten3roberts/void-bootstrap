@@ -91,7 +91,7 @@ echo -e "Packages to install: \n$PACKAGES"
 
 sudo xbps-install -S || exit
 
-sudo xbps-install -S "$WANTED_CATEGORIES" || exit
+sudo xbps-install -S "$PACKAGES" || exit
 
 # Change the default shell
 sudo chsh -s /bin/zsh
