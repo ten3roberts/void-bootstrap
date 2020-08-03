@@ -42,10 +42,14 @@ contains() {
     echo "$1" | egrep "(^| )$2($| )" 
 }
 
-[[ $# == 0 ]] && usage;
-
 # Normalize workdir
 cd `dirname "$0"`
+
+# Download package list if it doesn't exist
+cat void-packages.md > /dev/null 2> /dev/null || echo "Downloading package list" && curl -LO "https://raw.githubusercontent.com/ten3roberts/void-bootstrap/master/void-packages.md"
+
+[[ $# == 0 ]] && usage;
+
 
 ALL=`contains "$*" "--all"`
 INVERT=`contains "$*" "--invert"`
@@ -58,7 +62,7 @@ WANTED_PRUNED=""
 # Make sure only valid categories are entered
 for CATEGORY in $WANTED_CATEGORIES
 do
-    [[ $CATEGORY == "--invert" ]] && continue
+    [[ $CATEGORY == "--*" ]] && continue
     [[ -n `contains "$CATEGORIES" "$CATEGORY"` ]] && WANTED_PRUNED+="$CATEGORY " || echo "Unknown category '$CATEGORY'" >&2
 done
 
