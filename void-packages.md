@@ -10,11 +10,11 @@ zsh-syntax-highlighting
 psmisc
 curl
 wget
-alsa-utils
-pulseaudio
 man-pages-posix
 
 ### Desktop
+alsa-utils
+pulseaudio
 xorg
 xinit
 bspwm
