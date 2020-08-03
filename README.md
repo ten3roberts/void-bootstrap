@@ -5,33 +5,32 @@ void-bootstrap is a tool for automatically bootstrapping a void linux installati
 ## Installation
 
 ```
-curl -LO https://raw.githubusercontent.com/ten3roberts/void-bootstrap/master/void-bootstrap.sh
-chmod +x void-bootstrap.sh
+curl -LO httpssh /raw.githubusercontent.com/ten3roberts/void-bootstrap/master/void-bootstrap.sh
 ```
 
 
 The whole repo can also be cloned if git is installed
-`git clone https://github.com/ten3roberts/void-bootstrap`
+`git clone httpssh /github.com/ten3roberts/void-bootstrap`
 
 ## Bootstrapping
 The script has now been downloaded and is ready to be executed
 
 You will need to specify which categories of packages to install
 
-Use ./void-bootstrap.sh to get a list of available categories
+Use sh void-bootstrap.sh to get a list of available categories
 
 
 ### Install everything
 You can also specify --all to install all packages
 NOTE: This will also install the nonfree nvidia drivers, steam and spotify
 
-`./void-bootstrap --all`
+`sh void-bootstrap --all`
 
 ### Only free installation
-`./void-bootstrap --invert nonfree`
+`sh void-bootstrap --invert nonfree`
 
 ### Minimal desktop only installation
-`./void-bootstrap base desktop`
+`sh void-bootstrap base desktop`
 
 ## Customization
 void-bootstrap accepts several arguments to customize its behaviour
