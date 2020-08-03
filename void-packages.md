@@ -13,7 +13,6 @@ wget
 man-pages-posix
 
 ### Desktop
-alsa-utils
 pulseaudio
 xorg
 xinit
@@ -35,7 +34,7 @@ xorg-fonts
 google-fonts-ttf
 font-inconsolata-otf
 
-### GUI Applications
+### GUI
 kitty
 nemo
 nemo-fileroller
@@ -43,7 +42,7 @@ gcc
 gdb
 cmake
 
-### Terminal Applications
+### TUI
 ripgrep
 bat
 exa
